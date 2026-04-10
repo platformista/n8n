@@ -1,5 +1,6 @@
 applications:
   app-n8n:
+    container_profile: BALANCED
     type: "nodejs:22"
     variables:
       env:
