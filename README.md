@@ -43,7 +43,25 @@ Follow the CLI prompts to set up your project and link it to this repository.
 ```bash
 git add .
 git commit -m "Initial n8n deployment"
-upsun push
+upsun push --resources-init=manual    # Default Upsun resource settings won't work for n8n, so falling back to manual
+
+# Choose a resource profile based on your usage (BALANCED profile: see config.yaml):
+
+# Bare minimum: Testing/development, low-frequency executions
+upsun resources:set --size app-n8n:1   # 1 CPU, 1920 MB RAM
+upsun resources:set --disk app-n8n:2   # 2 GB disk
+
+# Level 1: Low-traffic production, infrequent workflows
+upsun resources:set --size app-n8n:2   # 2 CPU, 2800 MB RAM
+upsun resources:set --disk app-n8n:30  # 30 GB disk
+
+# Level 2: Moderate traffic, several concurrent workflows
+upsun resources:set --size app-n8n:4   # 4 CPU, 4800 MB RAM
+upsun resources:set --disk app-n8n:60  # 60 GB disk
+
+# Level 3: High-traffic/enterprise, many concurrent executions
+upsun resources:set --size app-n8n:8   # 8 CPU, 7296 MB RAM
+upsun resources:set --disk app-n8n:100 # 100 GB disk
 ```
 
 After deployment completes, grab your live URL:
@@ -60,7 +78,7 @@ All Upsun configuration lives in [`.upsun/config.yaml`](.upsun/config.yaml).
 
 ### Key points
 
-- **Dynamic port binding** — n8n needs to listen on the port assigned by Upsun. Since `variables.env` doesn't support referencing other variables, the `hooks.build` step writes `N8N_PORT=$PORT` and `N8N_LISTEN_ADDRESS=0.0.0.0` into `.environment`, which is sourced at runtime.
+- **Runtime configuration** — The [`.environment`](.environment) file automatically configures n8n on Upsun by detecting the platform, extracting the primary route URL, and setting webhook URLs, editor base URL, port binding, and listen address.
 - **Mounts** — The `.n8n` mount persists your workflows, credentials, and SQLite database across deployments. The `.cache` mount keeps temporary data out of the read-only filesystem.
 - **Request buffering disabled** — Required for n8n's real-time features (webhooks, SSE, streaming).
 
