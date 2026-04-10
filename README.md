@@ -64,6 +64,8 @@ upsun resources:set --size app-n8n:8   # 8 CPU, 7296 MB RAM
 upsun resources:set --disk app-n8n:100 # 100 GB disk
 ```
 
+*(The reference for the above resource profiles is [this n8n community post](https://community.n8n.io/t/automation-self-hosted/82638/3))*
+
 After deployment completes, grab your live URL:
 
 ```bash
