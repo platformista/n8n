@@ -1,0 +1,13 @@
+# 1. Check if PLATFORM_ROUTES is set, so this only runs on Upsun
+if [ -n "$PLATFORM_ROUTES" ]; then
+    # 2. Decode the routes, find the primary one, and extract the URL (the key)
+    # We use sed to remove the trailing slash to prevent n8n from creating double-slash URLs
+    PRIMARY_URL=$(echo $PLATFORM_ROUTES | base64 --decode | jq -r 'to_entries[] | select(.value.primary == true) | .key' | sed 's/\/$//')
+
+    # 3. Export the variables n8n needs
+    export WEBHOOK_URL="$PRIMARY_URL"
+    export N8N_EDITOR_BASE_URL="$PRIMARY_URL"
+
+    export N8N_PORT=$PORT
+    export N8N_LISTEN_ADDRESS=0.0.0.0
+fi
